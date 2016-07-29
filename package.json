@@ -1,0 +1,23 @@
+{
+  "name": "week-12",
+  "version": "1.0.0",
+  "description": "a amazon like store front that uses MySQL",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SunnyE/week-12.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SunnyE/week-12/issues"
+  },
+  "homepage": "https://github.com/SunnyE/week-12#readme",
+  "dependencies": {
+    "inquirer": "^1.1.2",
+    "mysql": "^2.11.1"
+  }
+}
