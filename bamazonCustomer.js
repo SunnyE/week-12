@@ -8,7 +8,7 @@ var id;
 // connection to mysql server using root user @ localhost
 var connection = mysql.createConnection({
     user: 'root',
-    password: '',
+    password: '',//actual password removed 
     host: 'localhost',
     port: 3306,
     database: 'Bamazon'
@@ -42,6 +42,8 @@ function displayItems () {
        
     });
 };
+
+// questions to prompt user
 var question = [{
     message: "Enter the ID of the product you want: ",
     name: "id"
@@ -107,4 +109,3 @@ function promptQuant(id){
     });
 }
 
-//'UPDATE products SET StockQuantity=' + (inStock - quantity) + ' WHERE ?', {id: answer.item}
