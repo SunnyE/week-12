@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 
 const mysql = require('mysql');
 
+var id;
 // connection to mysql server using root user @ localhost
 var connection = mysql.createConnection({
     user: 'root',
@@ -35,14 +36,33 @@ function displayItems () {
         console.log('-------------------------------')
         });
         promptid();
+       
     });
 };
+var question = [{
+    message: "Enter the ID of the product you want: ",
+    name: "id"
+}];
+
+var quantQuest = [{
+    message: 'How many would you like to buy?',
+    name: 'quant'
+}];
+
+var endQuest =[{
+    type:'list',
+    choices: ['Yes', 'No'],
+    message: 'Would you like to keep shopping?',
+    name: 'end'
+}];
 
 // prompt function that gets the item id from the user 
+
 function promptid() {
-    inquirer.prompt("Enter the ID of the product you want: ").then(function(answer){
+    inquirer.prompt(question).then(function(answer){
         if(answer){
-            var id = answer;
+            id = answer.id;
+            promptQuant(id);
            
         }
     });
@@ -55,23 +75,33 @@ function promptQuant(id){
     var name; 
     connection.query('SELECT * FROM Products WHERE ItemID =' + id, function(err, results){
           if (err){throw err}
-          quantity = results.StockQuantity;
-          name = results.ProductName;
-          price = results.Price;
+          
+          quantity = parseInt(results[0].StockQuantity);
+          name = results[0].ProductName;
+          price = parseFloat(results[0].Price);
+          
     });
-    inquirer.prompt('How many would you like to buy?').then(function(answer){
-        if(quantity >= answer) {
-            quantity -= answer; 
-            connection.query('UPDATE Products SET ? WHERE ?',[{
-              StockQuantity: parseInt(quantity)  
-            },{
-                ItemID: id
-            }]), function (err, results){
+    inquirer.prompt(quantQuest).then(function(answer){
+        
+        if(quantity >= answer.quant) {
+            quantity -= answer.quant; 
+           // console.log((quantity - answer.quant));
+            connection.query('UPDATE Products SET StockQuantity=' + (quantity) +  ' WHERE ?',{ItemID:id}, function (err, results){
                 if (err){throw err}
-                console.log("you have purchased " + quantity) + 'of ' + name + ' for $' + (quantity * price); 
-            }
+                console.log("you have purchased " + answer.quant + ' of ' + name + ' for $' + (answer.quant * price)); 
+                inquirer.prompt(endQuest).then(function(answer){
+                    if (answer.end === 'Yes'){
+                        displayItems();
+                    } else {
+                        connection.end();
+                    }
+                })
+            })
         } else {
-            console.log('There is not enough stock for your purchase');
-        }   
+            console.log('There is not enough stock for your purchase, there are only ' + quantity + ' in stock');
+            promptQuant(id);
+    }
     });
-};
+}
+
+//'UPDATE products SET StockQuantity=' + (inStock - quantity) + ' WHERE ?', {id: answer.item}
