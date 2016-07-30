@@ -2,6 +2,8 @@ const inquirer = require('inquirer');
 
 const mysql = require('mysql');
 
+var Table = require('cli-table');
+
 var id;
 // connection to mysql server using root user @ localhost
 var connection = mysql.createConnection({
@@ -22,19 +24,20 @@ connection.connect(function(err){
 
 });
 
+var table = new Table({
+    head: ['Item ID', 'Product Name', 'Department', 'Price', 'Quantity']
+  , colWidths: [10, 20, 20, 10, 15]
+});
 // function that pulls the items from the products table on mysql server
 function displayItems () {
     connection.query('SELECT * FROM Products', function(err, res){
         if (err){throw err}
 
         res.forEach(function(row) {
-        console.log('Product ID: ' + row.ItemID);
-        console.log('Product Name: ' + row.ProductName);
-        console.log('DepartmentName: ' + row.DepartmentName);
-        console.log('Price: ' + row.Price);
-        console.log('Stock Quantity: ' + row.StockQuantity);
-        console.log('-------------------------------')
+        table.push([row.ItemID, row.ProductName, row.DepartmentName, row.Price, row.StockQuantity]);
+
         });
+        console.log(table.toString());
         promptid();
        
     });
