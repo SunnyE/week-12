@@ -25,6 +25,16 @@ var firstquest =[{
     message: 'Please select from the following:',
     name: 'firstq'
 }];
+
+var question = [{
+    message: "Enter the ID of the product you want to add inventory: ",
+    name: "id"
+}];
+
+var quantQuest = [{
+    message: 'How many would you like to add?',
+    name: 'quant'
+}];
 // function that pulls the items from the products table on mysql server
 function displayItems () {
     connection.query('SELECT * FROM Products', function(err, res){
@@ -56,6 +66,8 @@ function firstprompt(){
          displayItems();
      } else if (answer.firstq === 'View Low Inventory'){
          lowinventor();
+     } else if ('Add to Inventory'){
+         addinventory();
      }
     });
 }
@@ -72,6 +84,28 @@ function lowinventor(){
     });
 };
 
-function 
+function addinventory(){
+
+    var quantity; 
+    inquirer.prompt(question).then(function(answer){
+        if(answer){
+            id = answer.id;
+            console.log(id);
+            connection.query('SELECT * FROM Products WHERE ItemID =' + id, function(err, results){
+            if (err){throw err}
+                name = results[0].ProductName;
+                quantity = parseInt(results[0].StockQuantity); 
+                inquirer.prompt(quantQuest).then(function(answer){
+                quantity+= parseInt(answer.quant);
+                connection.query('UPDATE Products SET StockQuantity=' + (quantity) +  ' WHERE ?',{ItemID:id}, function (err, results){  
+                 if (err){throw err}
+                  console.log("you have added " + answer.quant + ' to ' + name + 'for a total of ' + quantity);
+                 });
+             });
+                          
+            });
+        }
+    });
+}
 
 
